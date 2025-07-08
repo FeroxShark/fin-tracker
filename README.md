@@ -8,4 +8,10 @@ This project uses React, Vite and Tailwind.
 2. Install dependencies with `npm install`.
 3. Run `npm run dev` to start the development server.
 
-At this stage you can sign in with Google and access an empty dashboard.
+At this stage you can sign in with Google and manage your data.
+
+## Features
+
+- Accounts and transactions are stored in Firestore under each user
+- Offline persistence is enabled automatically
+- Press **N** anywhere to quickly add a transaction
