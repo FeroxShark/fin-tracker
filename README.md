@@ -15,3 +15,15 @@ At this stage you can sign in with Google and manage your data.
 - Accounts and transactions are stored in Firestore under each user
 - Offline persistence is enabled automatically
 - Press **N** anywhere to quickly add a transaction
+
+## Deploying your fork
+
+After running `npm run build`, you can publish the contents of the `dist` folder to GitHub Pages using the `gh-pages` package:
+
+```bash
+npx gh-pages -d dist
+```
+
+## Further documentation
+
+Additional project planning notes are available in [`docs/phase6-plan.md`](docs/phase6-plan.md).

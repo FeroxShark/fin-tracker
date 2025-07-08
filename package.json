@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "fetchUsdArs": "node scripts/fetchUsdArs.js",
     "fetchMpYield": "node scripts/fetchMpYield.js",
-    "applyMpYield": "node scripts/applyMpYield.js"
+    "applyMpYield": "node scripts/applyMpYield.js",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "react": "^18.2.0",
