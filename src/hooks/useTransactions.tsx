@@ -10,6 +10,7 @@ import {
 import { useAuth } from '../AuthProvider'
 import { db } from '../firebase'
 import { Transaction } from '../types'
+import { triggerBackup } from '../backup'
 
 export const useTransactions = () => {
   const { user } = useAuth()
@@ -29,16 +30,19 @@ export const useTransactions = () => {
     if (!user) return
     const col = collection(db, 'users', user.uid, 'tx')
     await addDoc(col, tx)
+    await triggerBackup(user.uid)
   }
 
   const updateTransaction = async (id: string, data: Partial<Transaction>) => {
     if (!user) return
     await updateDoc(doc(db, 'users', user.uid, 'tx', id), data)
+    await triggerBackup(user.uid)
   }
 
   const deleteTransaction = async (id: string) => {
     if (!user) return
     await deleteDoc(doc(db, 'users', user.uid, 'tx', id))
+    await triggerBackup(user.uid)
   }
 
   return { transactions, addTransaction, updateTransaction, deleteTransaction }
