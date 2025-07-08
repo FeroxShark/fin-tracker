@@ -1,22 +1,32 @@
-import { useState } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { AuthProvider } from './AuthProvider'
+import { AuthGuard } from './components/AuthGuard'
+import { Layout } from './components/Layout'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
+import Settings from './pages/Settings'
 
-function App() {
-  const [loggedIn, setLoggedIn] = useState(false)
-
+export default function App() {
   return (
-    <div className="h-screen flex items-center justify-center">
-      {loggedIn ? (
-        <h1 className="text-2xl font-bold">Hola mundo</h1>
-      ) : (
-        <button
-          onClick={() => setLoggedIn(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded"
-        >
-          Login
-        </button>
-      )}
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <AuthGuard>
+                <Layout />
+              </AuthGuard>
+            }
+          >
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="settings" element={<Settings />} />
+            <Route index element={<Dashboard />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 
-export default App
