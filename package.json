@@ -19,7 +19,8 @@
     "zustand": "^4.4.0",
     "firebase": "^9.23.0",
     "react-router-dom": "^6.14.1",
-    "firebase-admin": "^11.10.1"
+    "firebase-admin": "^11.10.1",
+    "papaparse": "^5.4.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
