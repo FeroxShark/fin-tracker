@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAccounts } from '../hooks/useAccounts'
 import { useTransactions } from '../hooks/useTransactions'
 import { useGoals } from '../hooks/useGoals'
+import { useRates } from '../hooks/useRates'
 import { AccountType, TransactionType } from '../types'
 import { Bar, Pie } from 'react-chartjs-2'
 import 'chart.js/auto'
@@ -22,8 +23,7 @@ export default function Dashboard() {
 
   const [range, setRange] = useState<'month' | 'quarter' | 'year'>('month')
   const [showUsd, setShowUsd] = useState(false)
-
-  const USD_RATE = 1000 // ARS per USD - placeholder value
+  const { usdRate } = useRates()
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -84,7 +84,7 @@ export default function Dashboard() {
 
   const balanceEntries = Object.entries(balances)
   const showBalances = balanceEntries.map(([cur, val]) => {
-    if (showUsd && cur === 'ARS') return ['USD', val / USD_RATE]
+    if (showUsd && cur === 'ARS' && usdRate) return ['USD', val / usdRate]
     return [cur, val]
   })
 
