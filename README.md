@@ -26,4 +26,4 @@ npx gh-pages -d dist
 
 ## Further documentation
 
-Additional project planning notes are available in [`docs/phase6-plan.md`](docs/phase6-plan.md).
+Additional project planning notes are available in [`docs/phase6-plan.md`](docs/phase6-plan.md) and [`docs/phase7-plan.md`](docs/phase7-plan.md).
