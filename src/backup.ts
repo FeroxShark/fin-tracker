@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, getDoc, addDoc } from 'firebase/firestore'
+import { collection, getDocs, doc, getDoc, addDoc, setDoc } from 'firebase/firestore'
 import { db } from './firebase'
 import { Account, Transaction, Goal } from './types'
 import Papa from 'papaparse'
@@ -40,7 +40,9 @@ export async function importCsv(uid: string, file: File) {
   for (const row of parsed.data as any[]) {
     if (!row.collection) continue
     const { collection: col, id, ...rest } = row as any
-    await addDoc(collection(db, 'users', uid, col), rest)
+    const colRef = collection(db, 'users', uid, col)
+    if (id) await setDoc(doc(colRef, id), rest)
+    else await addDoc(colRef, rest)
   }
 }
 
