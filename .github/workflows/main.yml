@@ -13,7 +13,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm ci
+      # Use npm install because the repository doesn't include a package-lock
+      # file yet. This generates one automatically for future runs.
+      - run: npm install
       - run: npm run build
       - run: npx gh-pages -d dist
         env:

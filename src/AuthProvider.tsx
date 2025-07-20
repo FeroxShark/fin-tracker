@@ -28,6 +28,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const login = async () => {
+    // TODO: configure this provider with your Google account when
+    // Instant Payments integration becomes available. This placeholder
+    // uses the default Firebase Google provider.
     const provider = new GoogleAuthProvider()
     await signInWithPopup(auth, provider)
   }

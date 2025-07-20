@@ -1,6 +1,9 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
+// Fetching official USD rates requires external connectivity which may be
+// restricted. Keep this script for future API access.
+
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
 if (!serviceAccount) {
   console.error('Missing FIREBASE_SERVICE_ACCOUNT env var');
@@ -24,3 +27,4 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+

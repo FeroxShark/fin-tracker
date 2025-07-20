@@ -6,6 +6,7 @@ This project uses React, Vite and Tailwind.
 
 1. Copy `.env.example` to `.env` and fill it with your Firebase project keys.
 2. Install dependencies with `npm install`.
+   This command will also create a `package-lock.json` file used by the build workflow.
 3. Run `npm run dev` to start the development server.
 
 At this stage you can sign in with Google and manage your data.
