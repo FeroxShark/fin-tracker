@@ -1,6 +1,9 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
+// This script calculates daily yield using data from Mercado Pago. The API
+// endpoints are placeholders until official support is available.
+
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
 if (!serviceAccount) {
   console.error('Missing FIREBASE_SERVICE_ACCOUNT env var');
@@ -64,3 +67,4 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+

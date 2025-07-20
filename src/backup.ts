@@ -46,6 +46,9 @@ export async function importCsv(uid: string, file: File) {
   }
 }
 
+// TODO: once the Google Drive API can be used with your Instant
+// Payments account, supply the OAuth token in `driveToken` and enable
+// this upload. Until then it will silently skip if no token exists.
 export async function uploadBackup(uid: string, data: BackupData) {
   const tokenDoc = await getDoc(doc(db, 'users', uid, 'driveToken'))
   if (!tokenDoc.exists()) return
@@ -73,5 +76,7 @@ export async function uploadBackup(uid: string, data: BackupData) {
 
 export async function triggerBackup(uid: string) {
   const data = await fetchBackupData(uid)
+  // Upload is optional until Google APIs are configured
   await uploadBackup(uid, data)
 }
+
