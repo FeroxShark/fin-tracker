@@ -1,6 +1,9 @@
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
+// This script requires an external API endpoint that isn't available yet.
+// Leave the configuration in place so it can be enabled once access is granted.
+
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
 if (!serviceAccount) {
   console.error('Missing FIREBASE_SERVICE_ACCOUNT env var');
@@ -26,3 +29,4 @@ main().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+

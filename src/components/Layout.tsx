@@ -9,6 +9,7 @@ export const Layout = () => {
         <nav className="space-y-2">
           <Link to="/dashboard" className="block">Dashboard</Link>
           <Link to="/settings" className="block">Settings</Link>
+          <Link to="/research" className="block">I+D</Link>
         </nav>
       </aside>
       <div className="flex-1 flex flex-col">
