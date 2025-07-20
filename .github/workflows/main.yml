@@ -17,6 +17,10 @@ jobs:
       # file yet. This generates one automatically for future runs.
       - run: npm install
       - run: npm run build
+      - name: Set up Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - run: npx gh-pages -d dist
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
