@@ -1,11 +1,12 @@
 import { FC, useMemo, useState } from 'react'
 import { format, subMonths, startOfMonth, endOfMonth, parseISO } from 'date-fns'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { Landmark, TrendingUp, PlusCircle, X } from 'lucide-react'
+import { Landmark, TrendingUp, PlusCircle } from 'lucide-react'
 import { Account, Transaction, Goal } from '../types-fintracker'
 import Card from '../components/Card'
 import StatCard from '../components/StatCard'
 import Button from '../components/Button'
+import Modal from '../components/Modal'
 
 interface Props {
   accounts: Account[]
@@ -15,7 +16,7 @@ interface Props {
 }
 
 const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransaction }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [chartExpanded, setChartExpanded] = useState(false)
   const { totalBalance, monthlyIncome, monthlyExpense } = useMemo(() => {
     let totalBalance = 0
     accounts.forEach(acc => {
@@ -58,7 +59,7 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
   const recentTx = [...transactions].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0,5)
 
   return (
-    <div className={`w-full h-full transition-all ${sidebarOpen ? 'lg:grid lg:grid-cols-[1fr_24rem]' : ''}`}> 
+    <div className="w-full h-full">
       <main className="space-y-6 overflow-y-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard title="Total Balance" value={`$${totalBalance.toFixed(2)}`} icon={<Landmark className="w-6 h-6 text-blue-600" />} />
@@ -70,7 +71,7 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-lg text-slate-800">Income vs Expense (Last 6 Months)</h3>
-            <button onClick={() => setSidebarOpen(true)} className="text-slate-600 hover:text-slate-800 transition-colors">
+            <button onClick={() => setChartExpanded(true)} className="text-slate-600 hover:text-slate-800 transition-colors">
               Expand
             </button>
           </div>
@@ -138,25 +139,21 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
           </div>
         </Card>
       </main>
-      {sidebarOpen && (
-        <aside className="border-l bg-white dark:bg-slate-800 overflow-y-auto">
-          <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
-            <h3 className="font-bold text-slate-800 dark:text-slate-100">Transactions</h3>
-            <button onClick={() => setSidebarOpen(false)} className="text-slate-600 hover:text-slate-800">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          <ul className="divide-y divide-slate-200">
-            {transactions.map(t => (
-              <li key={t.id} className="flex justify-between p-2 text-sm">
-                <span>{t.category}</span>
-                <span>{format(parseISO(t.date), 'PP')}</span>
-              </li>
-            ))}
-            {transactions.length === 0 && <p className="text-center py-4 text-slate-500">No transactions.</p>}
-          </ul>
-        </aside>
-      )}
+      <Modal isOpen={chartExpanded} onClose={() => setChartExpanded(false)} title="Income vs Expense">
+        <div className="h-96 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+              <XAxis dataKey="name" tick={{ fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
+              <YAxis tick={{ fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} tickFormatter={v => `$${v}`} />
+              <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }} />
+              <Legend iconType="circle" />
+              <Line type="monotone" dataKey="Income" stroke="#22c55e" strokeWidth={2} />
+              <Line type="monotone" dataKey="Expense" stroke="#ef4444" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Modal>
     </div>
   )
 }
