@@ -92,6 +92,10 @@ const FinTrackerPage: FC = () => {
     setFixedExpenses(prev => prev.filter(fx => fx.id !== id))
   }
 
+  const handleUpdateFixed = (id: string, data: Partial<FixedExpense>) => {
+    setFixedExpenses(prev => prev.map(fx => fx.id === id ? { ...fx, ...data } : fx))
+  }
+
   const handleExport = () => {
     const data = JSON.stringify({ accounts, transactions, goals, categories, fixedExpenses }, null, 2)
     const blob = new Blob([data], { type: 'application/json' })
@@ -163,7 +167,7 @@ const FinTrackerPage: FC = () => {
       case 'categories':
         return <CategoriesView categories={categories} onAdd={handleAddCategory} onDelete={handleDeleteCategory} />
       case 'fixed':
-        return <FixedExpensesView expenses={fixedExpenses} onAdd={handleAddFixed} onDelete={handleDeleteFixed} />
+        return <FixedExpensesView expenses={fixedExpenses} onAdd={handleAddFixed} onDelete={handleDeleteFixed} onUpdate={handleUpdateFixed} />
       case 'goals':
         return <Card><h2 className="text-2xl font-bold text-slate-800">Goals</h2><p className="text-slate-500 mt-4">Goal management coming soon!</p></Card>
       case 'settings':
