@@ -10,6 +10,7 @@ import {
   MoreVertical,
   Repeat
 } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 import DashboardView from '../views/DashboardView'
 import TransactionsView from '../views/TransactionsView'
 import AccountsView from '../views/AccountsView'
@@ -28,6 +29,7 @@ import {
   View
 } from '../types-fintracker'
 import { useLocalStorage } from '../hooks/useLocalStorage'
+import { useDarkMode } from '../hooks/useDarkMode'
 import Card from '../components/Card'
 
 const FinTrackerPage: FC = () => {
@@ -37,6 +39,7 @@ const FinTrackerPage: FC = () => {
   const [goals, setGoals] = useLocalStorage<Goal[]>('fin_goals', [])
   const [categories, setCategories] = useLocalStorage<Category[]>('fin_categories', [])
   const [fixedExpenses, setFixedExpenses] = useLocalStorage<FixedExpense[]>('fin_fixed_expenses', [])
+  const [darkMode, setDarkMode] = useDarkMode()
 
   const [isTxModalOpen, setTxModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
@@ -182,7 +185,7 @@ const FinTrackerPage: FC = () => {
   )
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
       <aside className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0">
         <div className="h-full px-3 py-4 overflow-y-auto bg-white border-r border-slate-200">
           <a href="#" onClick={e => { e.preventDefault(); setView('dashboard') }} className="flex items-center pl-2.5 mb-5">
@@ -198,6 +201,15 @@ const FinTrackerPage: FC = () => {
             <NavItem currentView={view} targetView="goals" setView={setView} icon={<Target className="w-6 h-6" />}>Goals</NavItem>
             <NavItem currentView={view} targetView="settings" setView={setView} icon={<Settings className="w-6 h-6" />}>Settings</NavItem>
             <NavItem currentView={view} targetView="roadmap" setView={setView} icon={<Info className="w-6 h-6" />}>Roadmap</NavItem>
+            <li>
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 text-slate-600 hover:bg-slate-100 w-full"
+              >
+                {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+                <span className="ml-3 flex-1 whitespace-nowrap">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+              </button>
+            </li>
           </ul>
         </div>
       </aside>
