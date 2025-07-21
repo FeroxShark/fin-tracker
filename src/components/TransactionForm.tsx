@@ -1,15 +1,16 @@
 import { FC, useState } from 'react'
-import { Account, Transaction, TransactionType } from '../types-fintracker'
+import { Account, Transaction, TransactionType, Category } from '../types-fintracker'
 import Button from './Button'
 
 interface Props {
   transaction?: Transaction | null
   accounts: Account[]
+  categories: Category[]
   onSave: (tx: Omit<Transaction, 'id'> & { id?: string }) => void
   onClose: () => void
 }
 
-const TransactionForm: FC<Props> = ({ transaction, accounts, onSave, onClose }) => {
+const TransactionForm: FC<Props> = ({ transaction, accounts, categories, onSave, onClose }) => {
   const [amount, setAmount] = useState(transaction?.amount.toString() || '')
   const [accountId, setAccountId] = useState(transaction?.accountId || (accounts[0]?.id || ''))
   const [type, setType] = useState<TransactionType>(transaction?.type || 'Expense')
@@ -55,7 +56,12 @@ const TransactionForm: FC<Props> = ({ transaction, accounts, onSave, onClose }) 
       </div>
       <div>
         <label htmlFor="category" className="block text-sm font-medium text-slate-600 mb-1">Category</label>
-        <input id="category" type="text" value={category} onChange={e => setCategory(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" required />
+        <input id="category" list="categories" type="text" value={category} onChange={e => setCategory(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" required />
+        <datalist id="categories">
+          {categories.map(c => (
+            <option key={c.id} value={c.name} />
+          ))}
+        </datalist>
       </div>
       <div>
         <label htmlFor="date" className="block text-sm font-medium text-slate-600 mb-1">Date</label>

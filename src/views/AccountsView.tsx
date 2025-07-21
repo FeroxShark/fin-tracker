@@ -1,0 +1,68 @@
+import { FC, useState } from 'react'
+import { Account, AccountType } from '../types-fintracker'
+import Card from '../components/Card'
+import Button from '../components/Button'
+
+interface Props {
+  accounts: Account[]
+  onAdd: (a: Omit<Account, 'id'>) => void
+  onDelete: (id: string) => void
+}
+
+const AccountsView: FC<Props> = ({ accounts, onAdd, onDelete }) => {
+  const [name, setName] = useState('')
+  const [type, setType] = useState<AccountType>('Checking')
+  const [currency, setCurrency] = useState('USD')
+  const [platform, setPlatform] = useState('')
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name) return
+    onAdd({ name, type, currency, platform })
+    setName('')
+    setPlatform('')
+  }
+
+  return (
+    <Card>
+      <h2 className="text-2xl font-bold text-slate-800 mb-6">Accounts</h2>
+      <form onSubmit={submit} className="space-y-4 mb-6">
+        <div>
+          <label className="block text-sm font-medium text-slate-600 mb-1">Name</label>
+          <input value={name} onChange={e => setName(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" required />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-600 mb-1">Type</label>
+          <select value={type} onChange={e => setType(e.target.value as AccountType)} className="w-full p-2 border border-slate-300 rounded-md">
+            <option>Checking</option>
+            <option>Savings</option>
+            <option>Credit Card</option>
+            <option>Investment</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-600 mb-1">Currency</label>
+          <input value={currency} onChange={e => setCurrency(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-slate-600 mb-1">Platform</label>
+          <input value={platform} onChange={e => setPlatform(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" />
+        </div>
+        <div className="text-right">
+          <Button>Add Account</Button>
+        </div>
+      </form>
+      <ul className="divide-y divide-slate-200">
+        {accounts.map(acc => (
+          <li key={acc.id} className="flex items-center justify-between py-2">
+            <span>{acc.name} - {acc.currency} ({acc.platform})</span>
+            <Button variant="danger" onClick={() => onDelete(acc.id)}>Delete</Button>
+          </li>
+        ))}
+        {accounts.length === 0 && <p className="text-slate-500 text-center">No accounts yet.</p>}
+      </ul>
+    </Card>
+  )
+}
+
+export default AccountsView

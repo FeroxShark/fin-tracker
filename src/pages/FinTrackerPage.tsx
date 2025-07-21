@@ -1,12 +1,32 @@
 import { FC, useState, useEffect, useCallback } from 'react'
-import { LayoutDashboard, ArrowLeftRight, Target, Settings, Info, PiggyBank } from 'lucide-react'
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  Target,
+  Settings,
+  Info,
+  PiggyBank,
+  CreditCard,
+  MoreVertical,
+  Repeat
+} from 'lucide-react'
 import DashboardView from '../views/DashboardView'
 import TransactionsView from '../views/TransactionsView'
+import AccountsView from '../views/AccountsView'
+import CategoriesView from '../views/CategoriesView'
+import FixedExpensesView from '../views/FixedExpensesView'
 import SettingsView from '../views/SettingsView'
 import RoadmapView from '../views/RoadmapView'
 import Modal from '../components/Modal'
 import TransactionForm from '../components/TransactionForm'
-import { Account, Transaction, Goal, View } from '../types-fintracker'
+import {
+  Account,
+  Transaction,
+  Goal,
+  Category,
+  FixedExpense,
+  View
+} from '../types-fintracker'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import Card from '../components/Card'
 
@@ -15,6 +35,8 @@ const FinTrackerPage: FC = () => {
   const [accounts, setAccounts] = useLocalStorage<Account[]>('fin_accounts', [])
   const [transactions, setTransactions] = useLocalStorage<Transaction[]>('fin_transactions', [])
   const [goals, setGoals] = useLocalStorage<Goal[]>('fin_goals', [])
+  const [categories, setCategories] = useLocalStorage<Category[]>('fin_categories', [])
+  const [fixedExpenses, setFixedExpenses] = useLocalStorage<FixedExpense[]>('fin_fixed_expenses', [])
 
   const [isTxModalOpen, setTxModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
@@ -43,8 +65,32 @@ const FinTrackerPage: FC = () => {
     setTransactions(prev => prev.filter(t => t.id !== id))
   }
 
+  const handleAddAccount = (acc: Omit<Account, 'id'>) => {
+    setAccounts(prev => [...prev, { ...acc, id: crypto.randomUUID() }])
+  }
+
+  const handleDeleteAccount = (id: string) => {
+    setAccounts(prev => prev.filter(a => a.id !== id))
+  }
+
+  const handleAddCategory = (cat: Omit<Category, 'id'>) => {
+    setCategories(prev => [...prev, { ...cat, id: crypto.randomUUID() }])
+  }
+
+  const handleDeleteCategory = (id: string) => {
+    setCategories(prev => prev.filter(c => c.id !== id))
+  }
+
+  const handleAddFixed = (f: Omit<FixedExpense, 'id'>) => {
+    setFixedExpenses(prev => [...prev, { ...f, id: crypto.randomUUID() }])
+  }
+
+  const handleDeleteFixed = (id: string) => {
+    setFixedExpenses(prev => prev.filter(fx => fx.id !== id))
+  }
+
   const handleExport = () => {
-    const data = JSON.stringify({ accounts, transactions, goals }, null, 2)
+    const data = JSON.stringify({ accounts, transactions, goals, categories, fixedExpenses }, null, 2)
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -66,6 +112,8 @@ const FinTrackerPage: FC = () => {
             setAccounts(data.accounts)
             setTransactions(data.transactions)
             setGoals(data.goals)
+            if (data.categories) setCategories(data.categories)
+            if (data.fixedExpenses) setFixedExpenses(data.fixedExpenses)
             alert('Data imported successfully!')
             setView('dashboard')
           }
@@ -83,6 +131,8 @@ const FinTrackerPage: FC = () => {
       setAccounts([])
       setTransactions([])
       setGoals([])
+      setCategories([])
+      setFixedExpenses([])
       alert('All data has been cleared.')
     }
   }
@@ -105,6 +155,12 @@ const FinTrackerPage: FC = () => {
         return <DashboardView accounts={accounts} transactions={transactions} goals={goals} onAddTransaction={handleAddTransaction} />
       case 'transactions':
         return <TransactionsView transactions={transactions} accounts={accounts} onDelete={handleDeleteTransaction} onEdit={handleEditTransaction} />
+      case 'accounts':
+        return <AccountsView accounts={accounts} onAdd={handleAddAccount} onDelete={handleDeleteAccount} />
+      case 'categories':
+        return <CategoriesView categories={categories} onAdd={handleAddCategory} onDelete={handleDeleteCategory} />
+      case 'fixed':
+        return <FixedExpensesView expenses={fixedExpenses} onAdd={handleAddFixed} onDelete={handleDeleteFixed} />
       case 'goals':
         return <Card><h2 className="text-2xl font-bold text-slate-800">Goals</h2><p className="text-slate-500 mt-4">Goal management coming soon!</p></Card>
       case 'settings':
@@ -136,6 +192,9 @@ const FinTrackerPage: FC = () => {
           <ul className="space-y-2">
             <NavItem currentView={view} targetView="dashboard" setView={setView} icon={<LayoutDashboard className="w-6 h-6" />}>Dashboard</NavItem>
             <NavItem currentView={view} targetView="transactions" setView={setView} icon={<ArrowLeftRight className="w-6 h-6" />}>Transactions</NavItem>
+            <NavItem currentView={view} targetView="accounts" setView={setView} icon={<CreditCard className="w-6 h-6" />}>Accounts</NavItem>
+            <NavItem currentView={view} targetView="categories" setView={setView} icon={<MoreVertical className="w-6 h-6" />}>Categories</NavItem>
+            <NavItem currentView={view} targetView="fixed" setView={setView} icon={<Repeat className="w-6 h-6" />}>Fixed Expenses</NavItem>
             <NavItem currentView={view} targetView="goals" setView={setView} icon={<Target className="w-6 h-6" />}>Goals</NavItem>
             <NavItem currentView={view} targetView="settings" setView={setView} icon={<Settings className="w-6 h-6" />}>Settings</NavItem>
             <NavItem currentView={view} targetView="roadmap" setView={setView} icon={<Info className="w-6 h-6" />}>Roadmap</NavItem>
@@ -150,7 +209,7 @@ const FinTrackerPage: FC = () => {
       </main>
 
       <Modal isOpen={isTxModalOpen} onClose={() => setTxModalOpen(false)} title={editingTransaction ? 'Edit Transaction' : 'New Transaction'}>
-        <TransactionForm transaction={editingTransaction} accounts={accounts} onSave={handleSaveTransaction} onClose={() => setTxModalOpen(false)} />
+        <TransactionForm transaction={editingTransaction} accounts={accounts} categories={categories} onSave={handleSaveTransaction} onClose={() => setTxModalOpen(false)} />
       </Modal>
     </div>
   )

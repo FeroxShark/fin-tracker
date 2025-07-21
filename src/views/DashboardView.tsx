@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react'
 import { format, subMonths, startOfMonth, endOfMonth, parseISO } from 'date-fns'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Landmark, TrendingUp, PlusCircle } from 'lucide-react'
 import { Account, Transaction, Goal } from '../types-fintracker'
 import Card from '../components/Card'
@@ -69,15 +69,15 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
           <h3 className="font-bold text-lg mb-4 text-slate-800">Income vs Expense (Last 6 Months)</h3>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
+              <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                 <XAxis dataKey="name" tick={{ fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} />
                 <YAxis tick={{ fill: '#64748b' }} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} tickFormatter={v => `$${v}`} />
                 <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }} />
                 <Legend iconType="circle" />
-                <Bar dataKey="Income" fill="#22c55e" radius={[4,4,0,0]} />
-                <Bar dataKey="Expense" fill="#ef4444" radius={[4,4,0,0]} />
-              </BarChart>
+                <Line type="monotone" dataKey="Income" stroke="#22c55e" strokeWidth={2} />
+                <Line type="monotone" dataKey="Expense" stroke="#ef4444" strokeWidth={2} />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </Card>
