@@ -4,7 +4,7 @@ import { Layout } from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Settings from './pages/Settings'
 import Research from './pages/Research'
-import FinTrackerUI from './pages/FinTrackerUI'
+import FinTrackerPage from './pages/FinTrackerPage'
 
 export default function App() {
   return (
@@ -17,7 +17,7 @@ export default function App() {
             <Route path="research" element={<Research />} />
             <Route index element={<Dashboard />} />
           </Route>
-          <Route path="/new" element={<FinTrackerUI />} />
+          <Route path="/new" element={<FinTrackerPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
