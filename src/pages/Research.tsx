@@ -13,7 +13,6 @@ export default function Research() {
           <div>
             <h2 className="font-semibold">Funciones disponibles</h2>
             <ul className="list-disc ml-5">
-              <li>Inicio de sesión con Google</li>
               <li>Gestión de cuentas y transacciones</li>
               <li>Exportación e importación de datos</li>
             </ul>

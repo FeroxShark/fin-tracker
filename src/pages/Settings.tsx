@@ -1,14 +1,11 @@
 import { useState } from 'react'
-import { useAuth } from '../AuthProvider'
 import { fetchBackupData, toJSONBlob, toCsvBlob, importCsv } from '../backup'
 
 export default function Settings() {
-  const { user } = useAuth()
   const [file, setFile] = useState<File | null>(null)
 
   const downloadBackup = async () => {
-    if (!user) return
-    const data = await fetchBackupData(user.uid)
+    const data = await fetchBackupData()
     const blob = toJSONBlob(data)
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -19,8 +16,7 @@ export default function Settings() {
   }
 
   const downloadCsv = async () => {
-    if (!user) return
-    const data = await fetchBackupData(user.uid)
+    const data = await fetchBackupData()
     const blob = toCsvBlob(data)
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -31,8 +27,8 @@ export default function Settings() {
   }
 
   const importFile = async () => {
-    if (!user || !file) return
-    await importCsv(user.uid, file)
+    if (!file) return
+    await importCsv(file)
     setFile(null)
   }
 
@@ -58,4 +54,3 @@ export default function Settings() {
     </div>
   )
 }
-

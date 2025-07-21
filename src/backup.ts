@@ -1,5 +1,4 @@
-import { collection, getDocs, doc, getDoc, addDoc, setDoc } from 'firebase/firestore'
-import { db } from './firebase'
+import { useStore } from './store'
 import { Account, Transaction, Goal } from './types'
 import Papa from 'papaparse'
 
@@ -9,15 +8,9 @@ export interface BackupData {
   goals: Goal[]
 }
 
-export async function fetchBackupData(uid: string): Promise<BackupData> {
-  const accountsSnap = await getDocs(collection(db, 'users', uid, 'accounts'))
-  const txSnap = await getDocs(collection(db, 'users', uid, 'tx'))
-  const goalsSnap = await getDocs(collection(db, 'users', uid, 'goals'))
-  return {
-    accounts: accountsSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Account) })),
-    transactions: txSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Transaction) })),
-    goals: goalsSnap.docs.map((d) => ({ id: d.id, ...(d.data() as Goal) })),
-  }
+export async function fetchBackupData(): Promise<BackupData> {
+  const { accounts, transactions, goals } = useStore.getState()
+  return { accounts, transactions, goals }
 }
 
 export function toJSONBlob(data: BackupData): Blob {
@@ -33,50 +26,28 @@ export function toCsvBlob(data: BackupData): Blob {
   return new Blob([csv], { type: 'text/csv' })
 }
 
-export async function importCsv(uid: string, file: File) {
+export async function importCsv(file: File) {
   const text = await file.text()
   const parsed = Papa.parse(text, { header: true })
   if (!parsed.data || !Array.isArray(parsed.data)) return
+  const state = useStore.getState()
+  const accounts = [...state.accounts]
+  const transactions = [...state.transactions]
+  const goals = [...state.goals]
   for (const row of parsed.data as any[]) {
     if (!row.collection) continue
-    const { collection: col, id, ...rest } = row as any
-    const colRef = collection(db, 'users', uid, col)
-    if (id) await setDoc(doc(colRef, id), rest)
-    else await addDoc(colRef, rest)
-  }
-}
-
-// TODO: once the Google Drive API can be used with your Instant
-// Payments account, supply the OAuth token in `driveToken` and enable
-// this upload. Until then it will silently skip if no token exists.
-export async function uploadBackup(uid: string, data: BackupData) {
-  const tokenDoc = await getDoc(doc(db, 'users', uid, 'driveToken'))
-  if (!tokenDoc.exists()) return
-  const token = tokenDoc.data().access_token as string
-  const metadata = { name: `fintracker_backup_${Date.now()}.json` }
-  const boundary = 'BOUNDARY'
-  const body =
-    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n` +
-    JSON.stringify(metadata) +
-    `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n` +
-    JSON.stringify(data) +
-    `\r\n--${boundary}--`
-  await fetch(
-    'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': `multipart/related; boundary=${boundary}`,
-      },
-      body,
+    const { collection, id, ...rest } = row as any
+    if (collection === 'accounts') {
+      accounts.push({ ...rest, id: id || crypto.randomUUID() })
+    } else if (collection === 'tx') {
+      transactions.push({ ...rest, id: id || crypto.randomUUID() })
+    } else if (collection === 'goals') {
+      goals.push({ ...rest, id: id || crypto.randomUUID() })
     }
-  )
+  }
+  useStore.setState({ accounts, transactions, goals })
 }
 
-export async function triggerBackup(uid: string) {
-  const data = await fetchBackupData(uid)
-  // Upload is optional until Google APIs are configured
-  await uploadBackup(uid, data)
+export async function triggerBackup() {
+  // no-op for local mode
 }
-
