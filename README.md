@@ -15,6 +15,7 @@ This project uses React, Vite and Tailwind.
    - `VITE_FIREBASE_APP_ID` – the web app ID.
    - `FIREBASE_SERVICE_ACCOUNT` – JSON credentials for a service account used by server-side scripts (required for Google Drive backups or Instant Payments).
    - `MP_YIELD_ENDPOINT` – Mercado Pago yield rates endpoint if you have external API access.
+   - `MP_ACCESS_TOKEN` – private access token for Mercado Pago APIs used in Cloud Functions.
 2. Install dependencies with `npm install`. This command will also create a `package-lock.json` file used by the build workflow.
 3. Run `npm run dev` to start the development server.
 
