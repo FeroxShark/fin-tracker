@@ -4,18 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
     "preview": "vite preview",
-    "fetchUsdArs": "node scripts/fetchUsdArs.js",
-    "fetchMpYield": "node scripts/fetchMpYield.js",
-    "applyMpYield": "node scripts/applyMpYield.js",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "chart.js": "^4.2.1",
-    "firebase": "^9.23.0",
-    "firebase-admin": "^11.10.1",
     "papaparse": "^5.4.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
