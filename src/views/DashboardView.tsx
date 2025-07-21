@@ -1,7 +1,7 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { format, subMonths, startOfMonth, endOfMonth, parseISO } from 'date-fns'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { Landmark, TrendingUp, PlusCircle } from 'lucide-react'
+import { Landmark, TrendingUp, PlusCircle, X } from 'lucide-react'
 import { Account, Transaction, Goal } from '../types-fintracker'
 import Card from '../components/Card'
 import StatCard from '../components/StatCard'
@@ -15,6 +15,7 @@ interface Props {
 }
 
 const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransaction }) => {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { totalBalance, monthlyIncome, monthlyExpense } = useMemo(() => {
     let totalBalance = 0
     accounts.forEach(acc => {
@@ -57,16 +58,22 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
   const recentTx = [...transactions].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0,5)
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className={`w-full h-full transition-all ${sidebarOpen ? 'lg:grid lg:grid-cols-[1fr_24rem]' : ''}`}> 
+      <main className="space-y-6 overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard title="Total Balance" value={`$${totalBalance.toFixed(2)}`} icon={<Landmark className="w-6 h-6 text-blue-600" />} />
         <StatCard title="Monthly Income" value={`$${monthlyIncome.toFixed(2)}`} icon={<TrendingUp className="w-6 h-6 text-green-500" />} />
         <StatCard title="Monthly Expense" value={`$${monthlyExpense.toFixed(2)}`} icon={<TrendingUp className="w-6 h-6 text-red-500 transform -scale-y-100" />} />
-      </div>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
-          <h3 className="font-bold text-lg mb-4 text-slate-800">Income vs Expense (Last 6 Months)</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-bold text-lg text-slate-800">Income vs Expense (Last 6 Months)</h3>
+            <button onClick={() => setSidebarOpen(true)} className="text-slate-600 hover:text-slate-800 transition-colors">
+              Expand
+            </button>
+          </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
@@ -100,14 +107,14 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
             }) : <p className="text-slate-500 text-center py-4">No goals set yet. Go to the Goals tab to create one!</p>}
           </div>
         </Card>
-      </div>
-
-      <Card>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="font-bold text-lg text-slate-800">Recent Transactions</h3>
-          <Button onClick={onAddTransaction}><PlusCircle className="w-4 h-4" /> New Transaction</Button>
         </div>
-        <div className="flow-root">
+
+        <Card>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="font-bold text-lg text-slate-800">Recent Transactions</h3>
+            <Button onClick={onAddTransaction}><PlusCircle className="w-4 h-4" /> New Transaction</Button>
+          </div>
+          <div className="flow-root">
           <ul role="list" className="-my-4 divide-y divide-slate-200">
             {recentTx.length > 0 ? recentTx.map(t => {
               const acc = accounts.find(a => a.id === t.accountId)
@@ -128,8 +135,28 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
               )
             }) : <p className="text-slate-500 text-center py-4">No transactions yet. Add one to get started!</p>}
           </ul>
-        </div>
-      </Card>
+          </div>
+        </Card>
+      </main>
+      {sidebarOpen && (
+        <aside className="border-l bg-white dark:bg-slate-800 overflow-y-auto">
+          <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
+            <h3 className="font-bold text-slate-800 dark:text-slate-100">Transactions</h3>
+            <button onClick={() => setSidebarOpen(false)} className="text-slate-600 hover:text-slate-800">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <ul className="divide-y divide-slate-200">
+            {transactions.map(t => (
+              <li key={t.id} className="flex justify-between p-2 text-sm">
+                <span>{t.category}</span>
+                <span>{format(parseISO(t.date), 'PP')}</span>
+              </li>
+            ))}
+            {transactions.length === 0 && <p className="text-center py-4 text-slate-500">No transactions.</p>}
+          </ul>
+        </aside>
+      )}
     </div>
   )
 }

@@ -34,7 +34,7 @@ export interface FixedExpense {
   id: string
   name: string
   amount: number
-  dueDay: number
+  dueDate: string
 }
 export interface Goal {
   id: string
