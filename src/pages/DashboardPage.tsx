@@ -7,6 +7,7 @@ import Card from '../components/Card'
 import StatCard from '../components/StatCard'
 import Button from '../components/Button'
 import Modal from '../components/Modal'
+import { useLanguage } from '../LanguageProvider'
 
 interface Props {
   accounts: Account[]
@@ -17,6 +18,7 @@ interface Props {
 
 const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransaction }) => {
   const [chartExpanded, setChartExpanded] = useState(false)
+  const { t } = useLanguage()
   const { totalBalance, monthlyIncome, monthlyExpense } = useMemo(() => {
     let totalBalance = 0
     accounts.forEach(acc => {
@@ -62,17 +64,17 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
     <div className="w-full h-full">
       <main className="space-y-6 overflow-y-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Balance" value={`$${totalBalance.toFixed(2)}`} icon={<Landmark className="w-6 h-6 text-blue-600" />} />
-        <StatCard title="Monthly Income" value={`$${monthlyIncome.toFixed(2)}`} icon={<TrendingUp className="w-6 h-6 text-green-500" />} />
-        <StatCard title="Monthly Expense" value={`$${monthlyExpense.toFixed(2)}`} icon={<TrendingUp className="w-6 h-6 text-red-500 transform -scale-y-100" />} />
+        <StatCard title={t('totalBalance')} value={`$${totalBalance.toFixed(2)}`} icon={<Landmark className="w-6 h-6 text-blue-600" />} />
+        <StatCard title={t('monthlyIncome')} value={`$${monthlyIncome.toFixed(2)}`} icon={<TrendingUp className="w-6 h-6 text-green-500" />} />
+        <StatCard title={t('monthlyExpense')} value={`$${monthlyExpense.toFixed(2)}`} icon={<TrendingUp className="w-6 h-6 text-red-500 transform -scale-y-100" />} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-lg text-slate-800">Income vs Expense (Last 6 Months)</h3>
+            <h3 className="font-bold text-lg text-slate-800">{t('incomeVsExpense')}</h3>
             <button onClick={() => setChartExpanded(true)} className="text-slate-600 hover:text-slate-800 transition-colors">
-              Expand
+              {t('expand')}
             </button>
           </div>
           <div className="h-72">
@@ -90,7 +92,7 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
           </div>
         </Card>
         <Card>
-          <h3 className="font-bold text-lg mb-4 text-slate-800">Financial Goals</h3>
+          <h3 className="font-bold text-lg mb-4 text-slate-800">{t('financialGoals')}</h3>
           <div className="space-y-4">
             {goals.length > 0 ? goals.map(goal => {
               const progress = goal.targetAmount > 0 ? (goal.currentAmount / goal.targetAmount) * 100 : 0
@@ -105,15 +107,15 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
                   </div>
                 </div>
               )
-            }) : <p className="text-slate-500 text-center py-4">No goals set yet. Go to the Goals tab to create one!</p>}
+            }) : <p className="text-slate-500 text-center py-4">{t('noGoals')}</p>}
           </div>
         </Card>
         </div>
 
         <Card>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="font-bold text-lg text-slate-800">Recent Transactions</h3>
-            <Button onClick={onAddTransaction}><PlusCircle className="w-4 h-4" /> New Transaction</Button>
+            <h3 className="font-bold text-lg text-slate-800">{t('recentTransactions')}</h3>
+            <Button onClick={onAddTransaction}><PlusCircle className="w-4 h-4" /> {t('newTransaction')}</Button>
           </div>
           <div className="flow-root">
           <ul role="list" className="-my-4 divide-y divide-slate-200">
@@ -126,7 +128,7 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-900 truncate">{t.category}</p>
-                    <p className="text-sm text-slate-500 truncate">{acc?.name || 'Unknown Account'}</p>
+                    <p className="text-sm text-slate-500 truncate">{acc?.name || t('unknownAccount')}</p>
                   </div>
                   <div className="text-right">
                     <p className={`text-sm font-semibold ${t.type === 'Income' ? 'text-green-600' : 'text-red-600'}`}>{`${t.type === 'Income' ? '+' : '-'}$${t.amount.toFixed(2)}`}</p>
@@ -134,12 +136,12 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
                   </div>
                 </li>
               )
-            }) : <p className="text-slate-500 text-center py-4">No transactions yet. Add one to get started!</p>}
+            }) : <p className="text-slate-500 text-center py-4">{t('noTransactions')}</p>}
           </ul>
           </div>
         </Card>
       </main>
-      <Modal isOpen={chartExpanded} onClose={() => setChartExpanded(false)} title="Income vs Expense">
+      <Modal isOpen={chartExpanded} onClose={() => setChartExpanded(false)} title={t('incomeVsExpenseTitle')}>
         <div className="h-96 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData}>
