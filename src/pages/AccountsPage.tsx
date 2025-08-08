@@ -9,7 +9,7 @@ interface Props {
   onDelete: (id: string) => void
 }
 
-const AccountsView: FC<Props> = ({ accounts, onAdd, onDelete }) => {
+const AccountsPage: FC<Props> = ({ accounts, onAdd, onDelete }) => {
   const [name, setName] = useState('')
   const [type, setType] = useState<AccountType>('Checking')
   const [currency, setCurrency] = useState('USD')
@@ -70,4 +70,4 @@ const AccountsView: FC<Props> = ({ accounts, onAdd, onDelete }) => {
   )
 }
 
-export default AccountsView
+export default AccountsPage

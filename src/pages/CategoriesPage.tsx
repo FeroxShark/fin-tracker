@@ -9,7 +9,7 @@ interface Props {
   onDelete: (id: string) => void
 }
 
-const CategoriesView: FC<Props> = ({ categories, onAdd, onDelete }) => {
+const CategoriesPage: FC<Props> = ({ categories, onAdd, onDelete }) => {
   const [name, setName] = useState('')
 
   const submit = (e: React.FormEvent) => {
@@ -39,4 +39,4 @@ const CategoriesView: FC<Props> = ({ categories, onAdd, onDelete }) => {
   )
 }
 
-export default CategoriesView
+export default CategoriesPage

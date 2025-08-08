@@ -10,7 +10,7 @@ interface Props {
   onUpdate: (id: string, data: Partial<FixedExpense>) => void
 }
 
-const FixedExpensesView: FC<Props> = ({ expenses, onAdd, onDelete, onUpdate }) => {
+const FixedExpensesPage: FC<Props> = ({ expenses, onAdd, onDelete, onUpdate }) => {
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [dueDate, setDueDate] = useState('')
@@ -84,4 +84,4 @@ const FixedExpensesView: FC<Props> = ({ expenses, onAdd, onDelete, onUpdate }) =
   )
 }
 
-export default FixedExpensesView
+export default FixedExpensesPage

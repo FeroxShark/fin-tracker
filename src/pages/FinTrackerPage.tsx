@@ -11,13 +11,13 @@ import {
   Repeat
 } from 'lucide-react'
 import { Moon, Sun } from 'lucide-react'
-import DashboardView from '../views/DashboardView'
-import TransactionsView from '../views/TransactionsView'
-import AccountsView from '../views/AccountsView'
-import CategoriesView from '../views/CategoriesView'
-import FixedExpensesView from '../views/FixedExpensesView'
-import SettingsView from '../views/SettingsView'
-import RoadmapView from '../views/RoadmapView'
+import DashboardPage from './DashboardPage'
+import TransactionsPage from './TransactionsPage'
+import AccountsPage from './AccountsPage'
+import CategoriesPage from './CategoriesPage'
+import FixedExpensesPage from './FixedExpensesPage'
+import SettingsPage from './SettingsPage'
+import RoadmapPage from './RoadmapPage'
 import Modal from '../components/Modal'
 import TransactionForm from '../components/TransactionForm'
 import {
@@ -159,23 +159,23 @@ const FinTrackerPage: FC = () => {
   const renderView = () => {
     switch (view) {
       case 'dashboard':
-        return <DashboardView accounts={accounts} transactions={transactions} goals={goals} onAddTransaction={handleAddTransaction} />
+        return <DashboardPage accounts={accounts} transactions={transactions} goals={goals} onAddTransaction={handleAddTransaction} />
       case 'transactions':
-        return <TransactionsView transactions={transactions} accounts={accounts} onDelete={handleDeleteTransaction} onEdit={handleEditTransaction} />
+        return <TransactionsPage transactions={transactions} accounts={accounts} onDelete={handleDeleteTransaction} onEdit={handleEditTransaction} />
       case 'accounts':
-        return <AccountsView accounts={accounts} onAdd={handleAddAccount} onDelete={handleDeleteAccount} />
+        return <AccountsPage accounts={accounts} onAdd={handleAddAccount} onDelete={handleDeleteAccount} />
       case 'categories':
-        return <CategoriesView categories={categories} onAdd={handleAddCategory} onDelete={handleDeleteCategory} />
+        return <CategoriesPage categories={categories} onAdd={handleAddCategory} onDelete={handleDeleteCategory} />
       case 'fixed':
-        return <FixedExpensesView expenses={fixedExpenses} onAdd={handleAddFixed} onDelete={handleDeleteFixed} onUpdate={handleUpdateFixed} />
+        return <FixedExpensesPage expenses={fixedExpenses} onAdd={handleAddFixed} onDelete={handleDeleteFixed} onUpdate={handleUpdateFixed} />
       case 'goals':
         return <Card><h2 className="text-2xl font-bold text-slate-800">Goals</h2><p className="text-slate-500 mt-4">Goal management coming soon!</p></Card>
       case 'settings':
-        return <SettingsView onExport={handleExport} onImport={handleImport} onClearData={handleClearData} />
+        return <SettingsPage onExport={handleExport} onImport={handleImport} onClearData={handleClearData} />
       case 'roadmap':
-        return <RoadmapView />
+        return <RoadmapPage />
       default:
-        return <DashboardView accounts={accounts} transactions={transactions} goals={goals} onAddTransaction={handleAddTransaction} />
+        return <DashboardPage accounts={accounts} transactions={transactions} goals={goals} onAddTransaction={handleAddTransaction} />
     }
   }
 

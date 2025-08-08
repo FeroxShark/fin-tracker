@@ -3,5 +3,9 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/fin-tracker/'
+  base: '/fin-tracker/',
+  test: {
+    globals: true,
+    environment: 'jsdom'
+  }
 })
