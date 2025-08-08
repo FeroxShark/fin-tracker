@@ -13,3 +13,7 @@ Ahora incluye soporte para múltiples idiomas (inglés y español) y mejoras de 
 
 - Todos los datos se guardan localmente en tu navegador.
 - Puedes presionar **N** en cualquier momento para añadir una transacción.
+
+## Integración continua y despliegue
+
+Este repositorio utiliza [GitHub Actions](https://github.com/features/actions) para ejecutar las pruebas, construir el proyecto y desplegar automáticamente la aplicación en GitHub Pages cuando se hace push a la rama `main`.
