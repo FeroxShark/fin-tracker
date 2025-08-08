@@ -31,6 +31,7 @@ import {
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { useDarkMode } from '../hooks/useDarkMode'
 import Card from '../components/Card'
+import { useLanguage } from '../LanguageProvider'
 
 const FinTrackerPage: FC = () => {
   const [view, setView] = useState<View>('dashboard')
@@ -40,6 +41,7 @@ const FinTrackerPage: FC = () => {
   const [categories, setCategories] = useLocalStorage<Category[]>('fin_categories', [])
   const [fixedExpenses, setFixedExpenses] = useLocalStorage<FixedExpense[]>('fin_fixed_expenses', [])
   const [darkMode, setDarkMode] = useDarkMode()
+  const { t } = useLanguage()
 
   const [isTxModalOpen, setTxModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
@@ -115,18 +117,18 @@ const FinTrackerPage: FC = () => {
       try {
         const data = JSON.parse(ev.target?.result as string)
         if (data.accounts && data.transactions && data.goals) {
-          if (window.confirm('This will overwrite all current data. Are you sure?')) {
+          if (window.confirm(t('overwriteConfirm'))) {
             setAccounts(data.accounts)
             setTransactions(data.transactions)
             setGoals(data.goals)
             if (data.categories) setCategories(data.categories)
             if (data.fixedExpenses) setFixedExpenses(data.fixedExpenses)
-            alert('Data imported successfully!')
+            alert(t('importSuccess'))
             setView('dashboard')
           }
         }
       } catch {
-        alert('Invalid file format.')
+        alert(t('invalidFile'))
       }
     }
     reader.readAsText(file)
@@ -134,13 +136,13 @@ const FinTrackerPage: FC = () => {
   }
 
   const handleClearData = () => {
-    if (window.confirm('DANGER: This will permanently delete all your data. This cannot be undone. Are you sure?')) {
+    if (window.confirm(t('clearConfirm'))) {
       setAccounts([])
       setTransactions([])
       setGoals([])
       setCategories([])
       setFixedExpenses([])
-      alert('All data has been cleared.')
+      alert(t('cleared'))
     }
   }
 
@@ -169,7 +171,7 @@ const FinTrackerPage: FC = () => {
       case 'fixed':
         return <FixedExpensesPage expenses={fixedExpenses} onAdd={handleAddFixed} onDelete={handleDeleteFixed} onUpdate={handleUpdateFixed} />
       case 'goals':
-        return <Card><h2 className="text-2xl font-bold text-slate-800">Goals</h2><p className="text-slate-500 mt-4">Goal management coming soon!</p></Card>
+        return <Card><h2 className="text-2xl font-bold text-slate-800">{t('goals')}</h2><p className="text-slate-500 mt-4">{t('goalsComingSoon')}</p></Card>
       case 'settings':
         return <SettingsPage onExport={handleExport} onImport={handleImport} onClearData={handleClearData} />
       case 'roadmap':
@@ -197,21 +199,21 @@ const FinTrackerPage: FC = () => {
             <span className="self-center text-xl font-semibold whitespace-nowrap">Fin Tracker</span>
           </a>
           <ul className="space-y-2">
-            <NavItem currentView={view} targetView="dashboard" setView={setView} icon={<LayoutDashboard className="w-6 h-6" />}>Dashboard</NavItem>
-            <NavItem currentView={view} targetView="transactions" setView={setView} icon={<ArrowLeftRight className="w-6 h-6" />}>Transactions</NavItem>
-            <NavItem currentView={view} targetView="accounts" setView={setView} icon={<CreditCard className="w-6 h-6" />}>Accounts</NavItem>
-            <NavItem currentView={view} targetView="categories" setView={setView} icon={<MoreVertical className="w-6 h-6" />}>Categories</NavItem>
-            <NavItem currentView={view} targetView="fixed" setView={setView} icon={<Repeat className="w-6 h-6" />}>Fixed Expenses</NavItem>
-            <NavItem currentView={view} targetView="goals" setView={setView} icon={<Target className="w-6 h-6" />}>Goals</NavItem>
-            <NavItem currentView={view} targetView="settings" setView={setView} icon={<Settings className="w-6 h-6" />}>Settings</NavItem>
-            <NavItem currentView={view} targetView="roadmap" setView={setView} icon={<Info className="w-6 h-6" />}>Roadmap</NavItem>
+            <NavItem currentView={view} targetView="dashboard" setView={setView} icon={<LayoutDashboard className="w-6 h-6" />}>{t('dashboard')}</NavItem>
+            <NavItem currentView={view} targetView="transactions" setView={setView} icon={<ArrowLeftRight className="w-6 h-6" />}>{t('transactions')}</NavItem>
+            <NavItem currentView={view} targetView="accounts" setView={setView} icon={<CreditCard className="w-6 h-6" />}>{t('accounts')}</NavItem>
+            <NavItem currentView={view} targetView="categories" setView={setView} icon={<MoreVertical className="w-6 h-6" />}>{t('categories')}</NavItem>
+            <NavItem currentView={view} targetView="fixed" setView={setView} icon={<Repeat className="w-6 h-6" />}>{t('fixed')}</NavItem>
+            <NavItem currentView={view} targetView="goals" setView={setView} icon={<Target className="w-6 h-6" />}>{t('goals')}</NavItem>
+            <NavItem currentView={view} targetView="settings" setView={setView} icon={<Settings className="w-6 h-6" />}>{t('settings')}</NavItem>
+            <NavItem currentView={view} targetView="roadmap" setView={setView} icon={<Info className="w-6 h-6" />}>{t('roadmap')}</NavItem>
             <li>
               <button
                 onClick={() => setDarkMode(!darkMode)}
                 className="flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 text-slate-600 hover:bg-slate-100 w-full"
               >
                 {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
-                <span className="ml-3 flex-1 whitespace-nowrap">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                <span className="ml-3 flex-1 whitespace-nowrap">{darkMode ? t('lightMode') : t('darkMode')}</span>
               </button>
             </li>
           </ul>
@@ -224,7 +226,7 @@ const FinTrackerPage: FC = () => {
         </div>
       </main>
 
-      <Modal isOpen={isTxModalOpen} onClose={() => setTxModalOpen(false)} title={editingTransaction ? 'Edit Transaction' : 'New Transaction'}>
+      <Modal isOpen={isTxModalOpen} onClose={() => setTxModalOpen(false)} title={editingTransaction ? t('editTransaction') : t('newTransaction')}>
         <TransactionForm transaction={editingTransaction} accounts={accounts} categories={categories} onSave={handleSaveTransaction} onClose={() => setTxModalOpen(false)} />
       </Modal>
     </div>

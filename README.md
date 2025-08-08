@@ -2,6 +2,8 @@
 
 Este proyecto utiliza React, Vite y Tailwind y se ejecuta completamente en tu navegador usando almacenamiento local.
 
+Ahora incluye soporte para múltiples idiomas (inglés y español) y mejoras de accesibilidad.
+
 ## Pasos para correrlo en local
 
 1. Instala las dependencias con `npm install`.
