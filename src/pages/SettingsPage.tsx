@@ -9,7 +9,7 @@ interface Props {
   onClearData: () => void
 }
 
-const SettingsView: FC<Props> = ({ onExport, onImport, onClearData }) => (
+const SettingsPage: FC<Props> = ({ onExport, onImport, onClearData }) => (
   <div className="space-y-8">
     <Card>
       <h3 className="text-lg font-bold text-slate-800 mb-4">Data Management</h3>
@@ -46,4 +46,4 @@ const SettingsView: FC<Props> = ({ onExport, onImport, onClearData }) => (
   </div>
 )
 
-export default SettingsView
+export default SettingsPage

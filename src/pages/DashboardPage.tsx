@@ -15,7 +15,7 @@ interface Props {
   onAddTransaction: () => void
 }
 
-const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransaction }) => {
+const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransaction }) => {
   const [chartExpanded, setChartExpanded] = useState(false)
   const { totalBalance, monthlyIncome, monthlyExpense } = useMemo(() => {
     let totalBalance = 0
@@ -158,4 +158,4 @@ const DashboardView: FC<Props> = ({ accounts, transactions, goals, onAddTransact
   )
 }
 
-export default DashboardView
+export default DashboardPage

@@ -11,7 +11,7 @@ interface Props {
   onEdit: (tx: Transaction) => void
 }
 
-const TransactionsView: FC<Props> = ({ transactions, accounts, onDelete, onEdit }) => {
+const TransactionsPage: FC<Props> = ({ transactions, accounts, onDelete, onEdit }) => {
   const sorted = [...transactions].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   return (
@@ -52,4 +52,4 @@ const TransactionsView: FC<Props> = ({ transactions, accounts, onDelete, onEdit 
   )
 }
 
-export default TransactionsView
+export default TransactionsPage

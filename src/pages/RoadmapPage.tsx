@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import Card from '../components/Card'
 
-const RoadmapView: FC = () => (
+const RoadmapPage: FC = () => (
   <Card>
     <h2 className="text-2xl font-bold text-slate-800 mb-6">Roadmap & Features</h2>
     <div className="space-y-8">
@@ -33,4 +33,4 @@ const RoadmapView: FC = () => (
   </Card>
 )
 
-export default RoadmapView
+export default RoadmapPage
