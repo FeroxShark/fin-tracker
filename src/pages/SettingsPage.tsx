@@ -38,7 +38,7 @@ const SettingsPage: FC<Props> = ({ onExport, onImport, onClearData }) => {
             </div>
             <label className="px-4 py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-slate-200 text-slate-800 hover:bg-slate-300 focus:ring-slate-400 cursor-pointer">
               <Upload className="w-4 h-4" /> {t('import')}
-              <input type="file" accept=".json" onChange={onImport} className="hidden" />
+              <input type="file" accept=".json" onChange={onImport} className="hidden" aria-label={t('import')} />
             </label>
           </div>
         </div>

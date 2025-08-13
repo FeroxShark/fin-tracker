@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { Edit, Trash2 } from 'lucide-react'
 import { Account, Transaction } from '../types-fintracker'
@@ -12,11 +12,35 @@ interface Props {
 }
 
 const TransactionsPage: FC<Props> = ({ transactions, accounts, onDelete, onEdit }) => {
-  const sorted = [...transactions].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const [range, setRange] = useState<{ from?: string; to?: string }>({})
+  const [query, setQuery] = useState('')
+  const sorted = useMemo(() => {
+    const base = [...transactions]
+      .filter(t => (range.from ? new Date(t.date) >= new Date(range.from) : true) && (range.to ? new Date(t.date) <= new Date(range.to) : true))
+      .filter(t => query ? t.category.toLowerCase().includes(query.toLowerCase()) : true)
+      .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    return base
+  }, [transactions, range, query])
 
   return (
     <Card>
-      <h2 className="text-2xl font-bold text-slate-800 mb-6">All Transactions</h2>
+      <div className="flex items-end justify-between gap-4 mb-6">
+        <h2 className="text-2xl font-bold text-slate-800">All Transactions</h2>
+        <div className="flex gap-2 items-end">
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">From</label>
+            <input type="date" value={range.from || ''} onChange={e => setRange(r => ({ ...r, from: e.target.value || undefined }))} className="p-2 border border-slate-300 rounded-md" />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">To</label>
+            <input type="date" value={range.to || ''} onChange={e => setRange(r => ({ ...r, to: e.target.value || undefined }))} className="p-2 border border-slate-300 rounded-md" />
+          </div>
+          <div>
+            <label className="block text-xs text-slate-500 mb-1">Search</label>
+            <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Category" className="p-2 border border-slate-300 rounded-md" />
+          </div>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">

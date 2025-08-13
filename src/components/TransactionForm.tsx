@@ -1,6 +1,8 @@
 import { FC, useState } from 'react'
 import { Account, Transaction, TransactionType, Category } from '../types-fintracker'
 import Button from './Button'
+import { sanitizeText } from '@shared/sanitize'
+import { parseLocaleNumberToCents } from '@shared/number'
 
 interface Props {
   transaction?: Transaction | null
@@ -24,14 +26,16 @@ const TransactionForm: FC<Props> = ({ transaction, accounts, categories, onSave,
       alert('Please fill all required fields.')
       return
     }
+    const cleanCategory = sanitizeText(category)
+    const money = parseLocaleNumberToCents(amount, 'USD')
     onSave({
       ...(transaction && { id: transaction.id }),
       accountId,
       type,
-      amount: parseFloat(amount),
-      category,
+      amount: money.cents / 100,
+      category: cleanCategory,
       date: new Date(date).toISOString(),
-      note
+      note: sanitizeText(note)
     })
   }
 

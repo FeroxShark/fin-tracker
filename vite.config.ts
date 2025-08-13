@@ -1,9 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import path from 'node:path'
 
 export default defineConfig({
   plugins: [react()],
   base: '/fin-tracker/',
+  resolve: {
+    alias: {
+      '@app': path.resolve(__dirname, 'src/app'),
+      '@entities': path.resolve(__dirname, 'src/entities'),
+      '@features': path.resolve(__dirname, 'src/features'),
+      '@ui': path.resolve(__dirname, 'src/ui'),
+      '@shared': path.resolve(__dirname, 'src/shared'),
+    }
+  },
   test: {
     globals: true,
     environment: 'jsdom'

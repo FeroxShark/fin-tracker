@@ -99,12 +99,15 @@ const FinTrackerPage: FC = () => {
   }
 
   const handleExport = () => {
-    const data = JSON.stringify({ accounts, transactions, goals, categories, fixedExpenses }, null, 2)
+    const payload = { accounts, transactions, goals, categories, fixedExpenses }
+    const data = JSON.stringify(payload, null, 2)
+    // basic checksum to help detect corruption in import
+    let hash = 0; for (let i=0;i<data.length;i++){ hash = (hash*31 + data.charCodeAt(i)) >>> 0 }
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `fin-tracker-backup-${new Date().toISOString().split('T')[0]}.json`
+    a.download = `fin-tracker-backup-${new Date().toISOString().split('T')[0]}-${hash.toString(16)}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -115,7 +118,8 @@ const FinTrackerPage: FC = () => {
     const reader = new FileReader()
     reader.onload = ev => {
       try {
-        const data = JSON.parse(ev.target?.result as string)
+        const text = String(ev.target?.result || '')
+        const data = JSON.parse(text)
         if (data.accounts && data.transactions && data.goals) {
           if (window.confirm(t('overwriteConfirm'))) {
             setAccounts(data.accounts)
