@@ -1,6 +1,7 @@
 import { FC, useState } from 'react'
 import { FixedExpense } from '../types-fintracker'
 import Card from '../components/Card'
+import PageHeader from '../components/PageHeader'
 import Button from '../components/Button'
 
 interface Props {
@@ -41,7 +42,7 @@ const FixedExpensesPage: FC<Props> = ({ expenses, onAdd, onDelete, onUpdate }) =
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
-        <h2 className="text-2xl font-bold text-slate-800 mb-6">Fixed Expenses</h2>
+        <PageHeader title="Fixed Expenses" />
         <form onSubmit={submit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-600 mb-1">Name</label>
@@ -66,7 +67,7 @@ const FixedExpensesPage: FC<Props> = ({ expenses, onAdd, onDelete, onUpdate }) =
         </form>
       </Card>
       <Card>
-        <h3 className="font-bold text-lg mb-4 text-slate-800">Existing Expenses</h3>
+        <PageHeader title="Existing Expenses" className="mb-2" />
         <ul className="divide-y divide-slate-200">
           {expenses.map(exp => (
             <li key={exp.id} className="flex items-center justify-between py-2 gap-2">

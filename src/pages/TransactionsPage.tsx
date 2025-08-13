@@ -3,6 +3,7 @@ import { format, parseISO } from 'date-fns'
 import { Edit, Trash2 } from 'lucide-react'
 import { Account, Transaction } from '../types-fintracker'
 import Card from '../components/Card'
+import PageHeader from '../components/PageHeader'
 
 interface Props {
   transactions: Transaction[]
@@ -24,8 +25,7 @@ const TransactionsPage: FC<Props> = ({ transactions, accounts, onDelete, onEdit 
 
   return (
     <Card>
-      <div className="flex items-end justify-between gap-4 mb-6">
-        <h2 className="text-2xl font-bold text-slate-800">All Transactions</h2>
+      <PageHeader title="All Transactions" actions={
         <div className="flex gap-2 items-end">
           <div>
             <label className="block text-xs text-slate-500 mb-1">From</label>
@@ -40,7 +40,7 @@ const TransactionsPage: FC<Props> = ({ transactions, accounts, onDelete, onEdit 
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Category" className="p-2 border border-slate-300 rounded-md" />
           </div>
         </div>
-      </div>
+      } />
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200">
           <thead className="bg-slate-50">

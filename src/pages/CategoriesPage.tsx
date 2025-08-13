@@ -1,6 +1,7 @@
 import { FC, useState } from 'react'
 import { Category } from '../types-fintracker'
 import Card from '../components/Card'
+import PageHeader from '../components/PageHeader'
 import Button from '../components/Button'
 
 interface Props {
@@ -21,7 +22,7 @@ const CategoriesPage: FC<Props> = ({ categories, onAdd, onDelete }) => {
 
   return (
     <Card>
-      <h2 className="text-2xl font-bold text-slate-800 mb-6">Categories</h2>
+      <PageHeader title="Categories" />
       <form onSubmit={submit} className="flex gap-2 mb-4">
         <input value={name} onChange={e => setName(e.target.value)} className="flex-grow p-2 border border-slate-300 rounded-md" placeholder="Category name" required />
         <Button>Add</Button>
