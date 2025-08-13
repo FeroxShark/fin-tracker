@@ -20,31 +20,47 @@ import SettingsPage from './SettingsPage'
 import RoadmapPage from './RoadmapPage'
 import Modal from '../components/Modal'
 import TransactionForm from '../components/TransactionForm'
-import {
-  Account,
-  Transaction,
-  Goal,
-  Category,
-  FixedExpense,
-  View
-} from '../types-fintracker'
-import { useLocalStorage } from '../hooks/useLocalStorage'
+import { View } from '../types-fintracker'
+import { Transaction, Account, Category, FixedExpense } from '@entities/types'
+import { useAccounts } from '@app/hooks/useAccounts'
+import { useTransactions } from '@app/hooks/useTransactions'
+import { useCategories } from '@app/hooks/useCategories'
+import { useFixedExpenses } from '@app/hooks/useFixedExpenses'
+import { useGoals } from '@app/hooks/useGoals'
+import { useAppData } from '@app/hooks/useAppData'
 import { useDarkMode } from '../hooks/useDarkMode'
 import Card from '../components/Card'
 import { useLanguage } from '../LanguageProvider'
 
 const FinTrackerPage: FC = () => {
   const [view, setView] = useState<View>('dashboard')
-  const [accounts, setAccounts] = useLocalStorage<Account[]>('fin_accounts', [])
-  const [transactions, setTransactions] = useLocalStorage<Transaction[]>('fin_transactions', [])
-  const [goals, setGoals] = useLocalStorage<Goal[]>('fin_goals', [])
-  const [categories, setCategories] = useLocalStorage<Category[]>('fin_categories', [])
-  const [fixedExpenses, setFixedExpenses] = useLocalStorage<FixedExpense[]>('fin_fixed_expenses', [])
+  const { accounts, addAccount, deleteAccount } = useAccounts()
+  const { transactions, addTransaction, updateTransaction, deleteTransaction } = useTransactions()
+  const { categories, addCategory, deleteCategory } = useCategories()
+  const { fixedExpenses, addFixedExpense, updateFixedExpense, deleteFixedExpense } = useFixedExpenses()
+  const { goals } = useGoals()
+  const { exportData, importData, clearData } = useAppData()
   const [darkMode, setDarkMode] = useDarkMode()
   const { t } = useLanguage()
 
   const [isTxModalOpen, setTxModalOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Hydrate data on mount
+  useEffect(() => {
+    const initData = async () => {
+      try {
+        const { hydrate } = useAppData()
+        await hydrate()
+      } catch (error) {
+        console.error('Failed to hydrate data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    initData()
+  }, [])
 
   const handleAddTransaction = () => {
     setEditingTransaction(null)
@@ -56,96 +72,71 @@ const FinTrackerPage: FC = () => {
     setTxModalOpen(true)
   }
 
-  const handleSaveTransaction = (txData: Omit<Transaction, 'id'> & { id?: string }) => {
+  const handleSaveTransaction = async (txData: Omit<Transaction, 'id'> & { id?: string }) => {
     if (txData.id) {
-      setTransactions(prev => prev.map(t => t.id === txData.id ? { ...t, ...txData } : t))
+      await updateTransaction(txData.id, txData)
     } else {
-      setTransactions(prev => [...prev, { ...txData, id: new Date().toISOString() }])
+      await addTransaction(txData)
     }
     setTxModalOpen(false)
     setEditingTransaction(null)
   }
 
-  const handleDeleteTransaction = (id: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== id))
+  const handleDeleteTransaction = async (id: string) => {
+    await deleteTransaction(id)
   }
 
-  const handleAddAccount = (acc: Omit<Account, 'id'>) => {
-    setAccounts(prev => [...prev, { ...acc, id: crypto.randomUUID() }])
+  const handleAddAccount = async (acc: Omit<Account, 'id'>) => {
+    await addAccount(acc)
   }
 
-  const handleDeleteAccount = (id: string) => {
-    setAccounts(prev => prev.filter(a => a.id !== id))
+  const handleDeleteAccount = async (id: string) => {
+    await deleteAccount(id)
   }
 
-  const handleAddCategory = (cat: Omit<Category, 'id'>) => {
-    setCategories(prev => [...prev, { ...cat, id: crypto.randomUUID() }])
+  const handleAddCategory = async (cat: Omit<Category, 'id'>) => {
+    await addCategory(cat)
   }
 
-  const handleDeleteCategory = (id: string) => {
-    setCategories(prev => prev.filter(c => c.id !== id))
+  const handleDeleteCategory = async (id: string) => {
+    await deleteCategory(id)
   }
 
-  const handleAddFixed = (f: Omit<FixedExpense, 'id'>) => {
-    setFixedExpenses(prev => [...prev, { ...f, id: crypto.randomUUID() }])
+  const handleAddFixed = async (f: Omit<FixedExpense, 'id'>) => {
+    await addFixedExpense(f)
   }
 
-  const handleDeleteFixed = (id: string) => {
-    setFixedExpenses(prev => prev.filter(fx => fx.id !== id))
+  const handleDeleteFixed = async (id: string) => {
+    await deleteFixedExpense(id)
   }
 
-  const handleUpdateFixed = (id: string, data: Partial<FixedExpense>) => {
-    setFixedExpenses(prev => prev.map(fx => fx.id === id ? { ...fx, ...data } : fx))
+  const handleUpdateFixed = async (id: string, data: Partial<FixedExpense>) => {
+    await updateFixedExpense(id, data)
   }
 
   const handleExport = () => {
-    const payload = { accounts, transactions, goals, categories, fixedExpenses }
-    const data = JSON.stringify(payload, null, 2)
-    // basic checksum to help detect corruption in import
-    let hash = 0; for (let i=0;i<data.length;i++){ hash = (hash*31 + data.charCodeAt(i)) >>> 0 }
-    const blob = new Blob([data], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `fin-tracker-backup-${new Date().toISOString().split('T')[0]}-${hash.toString(16)}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+    exportData()
   }
 
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const reader = new FileReader()
-    reader.onload = ev => {
-      try {
-        const text = String(ev.target?.result || '')
-        const data = JSON.parse(text)
-        if (data.accounts && data.transactions && data.goals) {
-          if (window.confirm(t('overwriteConfirm'))) {
-            setAccounts(data.accounts)
-            setTransactions(data.transactions)
-            setGoals(data.goals)
-            if (data.categories) setCategories(data.categories)
-            if (data.fixedExpenses) setFixedExpenses(data.fixedExpenses)
-            alert(t('importSuccess'))
-            setView('dashboard')
-          }
-        }
-      } catch {
+    
+    if (window.confirm(t('overwriteConfirm'))) {
+      const success = await importData(file)
+      if (success) {
+        alert(t('importSuccess'))
+        setView('dashboard')
+      } else {
         alert(t('invalidFile'))
       }
     }
-    reader.readAsText(file)
     e.target.value = ''
   }
 
-  const handleClearData = () => {
+  const handleClearData = async () => {
     if (window.confirm(t('clearConfirm'))) {
-      setAccounts([])
-      setTransactions([])
-      setGoals([])
-      setCategories([])
-      setFixedExpenses([])
+      await clearData()
       alert(t('cleared'))
     }
   }
@@ -193,6 +184,17 @@ const FinTrackerPage: FC = () => {
       </a>
     </li>
   )
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
