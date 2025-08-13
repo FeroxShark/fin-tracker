@@ -1,9 +1,10 @@
 import { FC } from 'react'
 import { LayoutDashboard, ArrowLeftRight, CreditCard, MoreVertical, Repeat, Target, Settings, Info } from 'lucide-react'
 
+type ViewKey = 'dashboard'|'transactions'|'accounts'|'categories'|'fixed'|'goals'|'settings'|'roadmap'
 interface Props {
-  view: string
-  setView: (v: any) => void
+  view: ViewKey
+  setView: (v: ViewKey) => void
   labels: Record<string, string>
 }
 

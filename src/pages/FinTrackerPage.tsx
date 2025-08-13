@@ -163,13 +163,13 @@ const FinTrackerPage: FC = () => {
   const renderView = () => {
     switch (view) {
       case 'dashboard':
-        return <DashboardPage accounts={accountsUi} transactions={transactionsUi} goals={goals as any} onAddTransaction={handleAddTransaction} />
+        return <DashboardPage accounts={accountsUi} transactions={transactionsUi} goals={goals as unknown as any} onAddTransaction={handleAddTransaction} />
       case 'transactions':
         return <TransactionsPage transactions={transactionsUi} accounts={accountsUi} onDelete={handleDeleteTransaction} onEdit={handleEditTransaction} />
       case 'accounts':
         return <AccountsPage accounts={accountsUi} onAdd={handleAddAccount} onDelete={handleDeleteAccount} />
       case 'categories':
-        return <CategoriesPage categories={categories as any} onAdd={handleAddCategory} onDelete={handleDeleteCategory} />
+        return <CategoriesPage categories={categories as unknown as any} onAdd={handleAddCategory} onDelete={handleDeleteCategory} />
       case 'fixed':
         return <FixedExpensesPage expenses={fixedExpensesUi} onAdd={handleAddFixed} onDelete={handleDeleteFixed} onUpdate={handleUpdateFixed} />
       case 'goals':
@@ -179,13 +179,13 @@ const FinTrackerPage: FC = () => {
       case 'roadmap':
         return <RoadmapPage />
       default:
-        return <DashboardPage accounts={accountsUi} transactions={transactionsUi} goals={goals as any} onAddTransaction={handleAddTransaction} />
+        return <DashboardPage accounts={accountsUi} transactions={transactionsUi} goals={goals as unknown as any} onAddTransaction={handleAddTransaction} />
     }
   }
 
   const NavItem: FC<{ currentView: View; targetView: View; setView: (v: View) => void; icon: JSX.Element }> = ({ currentView, targetView, setView, icon, children }) => (
     <li>
-      <a href="#" onClick={e => { e.preventDefault(); setView(targetView) }} className={`flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 ${currentView === targetView ? 'bg-blue-100 text-blue-700' : 'text-slate-600 hover:bg-slate-100'}`}>
+      <a href={`/${targetView}`} onClick={e => { e.preventDefault(); setView(targetView); history.pushState({}, '', `${import.meta.env.BASE_URL}${targetView}`) }} className={`flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 ${currentView === targetView ? 'bg-blue-100 text-blue-700' : 'text-slate-600 hover:bg-slate-100'}`}>
         {icon}
         <span className="ml-3 flex-1 whitespace-nowrap">{children}</span>
       </a>
@@ -217,7 +217,7 @@ const FinTrackerPage: FC = () => {
         </div>
       </div>
       <Modal isOpen={isTxModalOpen} onClose={() => setTxModalOpen(false)} title={editingTransaction ? t('editTransaction') : t('newTransaction')}>
-        <TransactionForm transaction={editingTransaction as any} accounts={accountsUi} categories={categories as any} onSave={handleSaveTransaction} onClose={() => setTxModalOpen(false)} />
+        <TransactionForm transaction={editingTransaction as unknown as UiTransaction} accounts={accountsUi} categories={categories as unknown as UiCategory[]} onSave={handleSaveTransaction} onClose={() => setTxModalOpen(false)} />
       </Modal>
     </div>
   )
