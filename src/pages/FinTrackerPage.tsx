@@ -19,6 +19,8 @@ import FixedExpensesPage from './FixedExpensesPage'
 import SettingsPage from './SettingsPage'
 import RoadmapPage from './RoadmapPage'
 import Modal from '../components/Modal'
+import TopNav from '../components/TopNav'
+import Sidebar from '../components/Sidebar'
 import TransactionForm from '../components/TransactionForm'
 import { Transaction as UiTransaction, Account as UiAccount, Category as UiCategory, FixedExpense as UiFixedExpense, View } from '../types-fintracker'
 import type { Transaction as DomainTransaction, FixedExpense as DomainFixedExpense } from '@entities/types'
@@ -203,42 +205,19 @@ const FinTrackerPage: FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
-      <aside className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0">
-        <div className="h-full px-3 py-4 overflow-y-auto bg-white border-r border-slate-200">
-          <a href="#" onClick={e => { e.preventDefault(); setView('dashboard') }} className="flex items-center pl-2.5 mb-5">
-            <PiggyBank className="h-8 w-8 mr-2 text-blue-600" />
-            <span className="self-center text-xl font-semibold whitespace-nowrap">Fin Tracker</span>
-          </a>
-          <ul className="space-y-2">
-            <NavItem currentView={view} targetView="dashboard" setView={setView} icon={<LayoutDashboard className="w-6 h-6" />}>{t('dashboard')}</NavItem>
-            <NavItem currentView={view} targetView="transactions" setView={setView} icon={<ArrowLeftRight className="w-6 h-6" />}>{t('transactions')}</NavItem>
-            <NavItem currentView={view} targetView="accounts" setView={setView} icon={<CreditCard className="w-6 h-6" />}>{t('accounts')}</NavItem>
-            <NavItem currentView={view} targetView="categories" setView={setView} icon={<MoreVertical className="w-6 h-6" />}>{t('categories')}</NavItem>
-            <NavItem currentView={view} targetView="fixed" setView={setView} icon={<Repeat className="w-6 h-6" />}>{t('fixed')}</NavItem>
-            <NavItem currentView={view} targetView="goals" setView={setView} icon={<Target className="w-6 h-6" />}>{t('goals')}</NavItem>
-            <NavItem currentView={view} targetView="settings" setView={setView} icon={<Settings className="w-6 h-6" />}>{t('settings')}</NavItem>
-            <NavItem currentView={view} targetView="roadmap" setView={setView} icon={<Info className="w-6 h-6" />}>{t('roadmap')}</NavItem>
-            <li>
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="flex items-center p-3 text-base font-normal rounded-lg transition-all duration-200 text-slate-600 hover:bg-slate-100 w-full"
-              >
-                {darkMode ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
-                <span className="ml-3 flex-1 whitespace-nowrap">{darkMode ? t('lightMode') : t('darkMode')}</span>
-              </button>
-            </li>
-          </ul>
+      <TopNav onAddTransaction={handleAddTransaction} />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-[240px,1fr] gap-6 pt-6">
+          <Sidebar view={view} setView={setView} labels={{
+            dashboard: t('dashboard'), transactions: t('transactions'), accounts: t('accounts'), categories: t('categories'), fixed: t('fixed'), goals: t('goals'), settings: t('settings'), roadmap: t('roadmap')
+          }} />
+          <main>
+            {renderView()}
+          </main>
         </div>
-      </aside>
-
-      <main className="p-4 sm:ml-64">
-        <div className="mt-14">
-          {renderView()}
-        </div>
-      </main>
-
+      </div>
       <Modal isOpen={isTxModalOpen} onClose={() => setTxModalOpen(false)} title={editingTransaction ? t('editTransaction') : t('newTransaction')}>
-        <TransactionForm transaction={editingTransaction} accounts={accounts} categories={categories} onSave={handleSaveTransaction} onClose={() => setTxModalOpen(false)} />
+        <TransactionForm transaction={editingTransaction as any} accounts={accountsUi} categories={categories as any} onSave={handleSaveTransaction} onClose={() => setTxModalOpen(false)} />
       </Modal>
     </div>
   )
