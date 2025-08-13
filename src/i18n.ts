@@ -46,7 +46,14 @@ export const translations: Record<Language, Record<string, string>> = {
     invalidFile: 'Invalid file format.',
     close: 'Close',
     goalsComingSoon: 'Goal management coming soon!',
-    loading: 'Loading...'
+    loading: 'Loading...',
+    timeframe: 'Timeframe',
+    threeMonths: '3M',
+    sixMonths: '6M',
+    twelveMonths: '12M',
+    ytd: 'YTD',
+    all: 'All',
+    downloadCsv: 'Download CSV'
   },
   es: {
     dashboard: 'Tablero',
@@ -93,6 +100,13 @@ export const translations: Record<Language, Record<string, string>> = {
     invalidFile: 'Formato de archivo inválido.',
     close: 'Cerrar',
     goalsComingSoon: '¡La gestión de metas estará disponible pronto!',
-    loading: 'Cargando...'
+    loading: 'Cargando...',
+    timeframe: 'Periodo',
+    threeMonths: '3M',
+    sixMonths: '6M',
+    twelveMonths: '12M',
+    ytd: 'Año',
+    all: 'Todo',
+    downloadCsv: 'Descargar CSV'
   }
 }

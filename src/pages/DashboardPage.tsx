@@ -1,5 +1,5 @@
 import { FC, useMemo, useState } from 'react'
-import { format, subMonths, startOfMonth, endOfMonth, parseISO } from 'date-fns'
+import { format, subMonths, startOfMonth, endOfMonth, parseISO, startOfYear } from 'date-fns'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Landmark, TrendingUp, PlusCircle } from 'lucide-react'
 import { Account, Transaction, Goal } from '../types-fintracker'
@@ -18,6 +18,7 @@ interface Props {
 
 const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransaction }) => {
   const [chartExpanded, setChartExpanded] = useState(false)
+  const [timeframe, setTimeframe] = useState<'3m'|'6m'|'12m'|'ytd'|'all'>('6m')
   const { t } = useLanguage()
   const { totalBalance, monthlyIncome, monthlyExpense } = useMemo(() => {
     let totalBalance = 0
@@ -44,9 +45,11 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
   }, [accounts, transactions])
 
   const chartData = useMemo(() => {
-    const last6 = Array.from({ length: 6 }).map((_, i) => subMonths(new Date(), 5 - i))
-    return last6.map(m => {
-      const mStart = startOfMonth(m)
+    const now = new Date()
+    const months = timeframe === '3m' ? 3 : timeframe === '6m' ? 6 : timeframe === '12m' ? 12 : timeframe === 'ytd' ? (now.getMonth()+1) : 24
+    const list = Array.from({ length: months }).map((_, i) => subMonths(now, months - 1 - i))
+    return list.map(m => {
+      const mStart = timeframe === 'ytd' && m < startOfYear(now) ? startOfYear(now) : startOfMonth(m)
       const mEnd = endOfMonth(m)
       const tx = transactions.filter(t => {
         const d = parseISO(t.date)
@@ -56,7 +59,7 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
       const expense = tx.filter(t => t.type === 'Expense').reduce((s, t) => s + t.amount, 0)
       return { name: format(m, 'MMM'), Income: income, Expense: expense }
     })
-  }, [transactions])
+  }, [transactions, timeframe])
 
   const recentTx = [...transactions].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0,5)
 
@@ -73,9 +76,18 @@ const DashboardPage: FC<Props> = ({ accounts, transactions, goals, onAddTransact
         <Card>
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-lg text-slate-800">{t('incomeVsExpense')}</h3>
-            <button onClick={() => setChartExpanded(true)} className="text-slate-600 hover:text-slate-800 transition-colors">
-              {t('expand')}
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="hidden sm:flex bg-slate-100 rounded-lg p-1 text-sm">
+                <button className={`px-2 py-1 rounded-md ${timeframe==='3m'?'bg-white shadow':''}`} onClick={() => setTimeframe('3m')}>{t('threeMonths')}</button>
+                <button className={`px-2 py-1 rounded-md ${timeframe==='6m'?'bg-white shadow':''}`} onClick={() => setTimeframe('6m')}>{t('sixMonths')}</button>
+                <button className={`px-2 py-1 rounded-md ${timeframe==='12m'?'bg-white shadow':''}`} onClick={() => setTimeframe('12m')}>{t('twelveMonths')}</button>
+                <button className={`px-2 py-1 rounded-md ${timeframe==='ytd'?'bg-white shadow':''}`} onClick={() => setTimeframe('ytd')}>{t('ytd')}</button>
+                <button className={`px-2 py-1 rounded-md ${timeframe==='all'?'bg-white shadow':''}`} onClick={() => setTimeframe('all')}>{t('all')}</button>
+              </div>
+              <button onClick={() => setChartExpanded(true)} className="text-slate-600 hover:text-slate-800 transition-colors">
+                {t('expand')}
+              </button>
+            </div>
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
