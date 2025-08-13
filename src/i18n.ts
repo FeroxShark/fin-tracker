@@ -45,7 +45,8 @@ export const translations: Record<Language, Record<string, string>> = {
     importSuccess: 'Data imported successfully!',
     invalidFile: 'Invalid file format.',
     close: 'Close',
-    goalsComingSoon: 'Goal management coming soon!'
+    goalsComingSoon: 'Goal management coming soon!',
+    loading: 'Loading...'
   },
   es: {
     dashboard: 'Tablero',
@@ -91,6 +92,7 @@ export const translations: Record<Language, Record<string, string>> = {
     importSuccess: '¡Datos importados correctamente!',
     invalidFile: 'Formato de archivo inválido.',
     close: 'Cerrar',
-    goalsComingSoon: '¡La gestión de metas estará disponible pronto!'
+    goalsComingSoon: '¡La gestión de metas estará disponible pronto!',
+    loading: 'Cargando...'
   }
 }
